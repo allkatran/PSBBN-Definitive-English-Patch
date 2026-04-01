@@ -22,7 +22,7 @@
 
 if [[ "$LAUNCHED_BY_MAIN" != "1" ]]; then
     echo "This script should not be run directly. Please run: PSBBN-Definitive-Patch.sh"
-    exit 1
+    #exit 1
 fi
 
 # Set paths
@@ -52,8 +52,15 @@ elif [[ "$arch" = "aarch64" ]]; then
     APA_FIXER="${HELPER_DIR}/aarch64/PS2 APA Header Checksum Fixer.elf"
 fi
 
-serialnumber="$1"
-path_arg="$2"
+for arg in "$@"; do
+    [[ -z "$arg" ]] && continue
+
+    if [[ "$arg" == /* ]]; then
+        path_arg="${arg%/}"
+    elif [[ -z "$serialnumber" ]]; then
+        serialnumber="$arg"
+    fi
+done
 
 APA_PARTITIONS=("__system" "__common" "__sysconf" )
 

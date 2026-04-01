@@ -71,9 +71,6 @@ elif [[ "$arch" = "aarch64" ]]; then
     SQLITE="${HELPER_DIR}/aarch64/sqlite"
 fi
 
-serialnumber="$2"
-path_arg="$3"
-
 case "$1" in
   -install)
     MODE="install"
@@ -87,6 +84,18 @@ case "$1" in
     exit 1
     ;;
 esac
+
+shift  # remove first arg
+
+for arg in "$@"; do
+    [[ -z "$arg" ]] && continue
+
+    if [[ "$arg" == /* ]]; then
+        path_arg="${arg%/}"
+    elif [[ -z "$serialnumber" ]]; then
+        serialnumber="$arg"
+    fi
+done
 
 if [ "$MODE" = "install" ]; then
     LOG_FILE="${TOOLKIT_PATH}/logs/PSBBN-installer.log"

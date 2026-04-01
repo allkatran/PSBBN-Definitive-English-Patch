@@ -68,10 +68,19 @@ fi
 wsl=false
 
 # Check if first argument is -wsl and at least 2 more arguments follow
-if [[ "$1" == "-wsl" && -n "$2" && -n "$3" ]]; then
+if [[ "$1" == "-wsl" ]]; then
     wsl=true
-    serialnumber="$2"
-    path_arg="${3%/}"
+    shift  # remove -wsl from args
+
+    for arg in "$@"; do
+        [[ -z "$arg" ]] && continue
+
+        if [[ "$arg" == /* ]]; then
+            path_arg="${arg%/}"
+        elif [[ -z "$serialnumber" ]]; then
+            serialnumber="$arg"
+        fi
+    done
 fi
 
 error_msg() {
@@ -420,15 +429,15 @@ flash_update() {
 }
 
 option_one() {
-    "${SCRIPTS_DIR}/PSBBN-Installer.sh" -install $serialnumber "$path_arg"
+    "${SCRIPTS_DIR}/PSBBN-Installer.sh" -install "$serialnumber" "$path_arg"
 }
 
 option_two() {
-    "${SCRIPTS_DIR}/HOSDMenu-Installer.sh" $serialnumber "$path_arg"
+    "${SCRIPTS_DIR}/HOSDMenu-Installer.sh" "$serialnumber" "$path_arg"
 }
 
 option_three() {
-    "${SCRIPTS_DIR}/PSBBN-Installer.sh" -update
+    "${SCRIPTS_DIR}/PSBBN-Installer.sh" -update "$path_arg"
 }
 
 option_four() {
