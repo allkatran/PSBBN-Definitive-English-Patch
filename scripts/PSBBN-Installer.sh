@@ -988,7 +988,7 @@ if [ "$MODE" = "install" ]; then
         echo "Space available for APA partitions: $free_space GB" | tee -a "${LOG_FILE}"
         echo
         echo "What size would you like the \"POPS\" partition to be?"
-        echo "This partition is used to store PS1 games. A typically game requires between 200 and 700 MB."
+        echo "This partition is used to store PS1 games. A typical game requires between 200 and 700 MB."
         echo
         echo "Minimum 1 GB, maximum $max_pops GB"
         echo
