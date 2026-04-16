@@ -158,7 +158,6 @@ check_required_files() {
         "${SCRIPTS_DIR}/HOSDMenu-Installer.sh"
         "${SCRIPTS_DIR}/Game-Installer.sh"
         "${SCRIPTS_DIR}/Extras.sh"
-        "${SCRIPTS_DIR}/Game-Installer.sh"
         "${SCRIPTS_DIR}/Media-Installer.sh"
         "${HELPER_DIR}/art_downloader.py"
         "${HELPER_DIR}/binmerge.py"
@@ -173,12 +172,12 @@ check_required_files() {
         "${HELPER_DIR}/ArtDB.csv"
         "${HELPER_DIR}/TitlesDB_PS1.csv"
         "${HELPER_DIR}/TitlesDB_PS2.csv"
-        "${HELPER_DIR}/txt_to_icon_sys.py"
         "${HELPER_DIR}/vmc_groups.list"
         "${HELPER_DIR}/ps2_vmc_groups.list"
         "${HELPER_DIR}/genvmc.c"
         "${HELPER_DIR}/genvmc.h"
         "${HELPER_DIR}/psmbuild.py"
+        "${HELPER_DIR}/POP-game-fixes.list"
         "${CUE2POPS}"
         "${HDL_DUMP}"
         "${MKFS_EXFAT}"
@@ -187,13 +186,35 @@ check_required_files() {
         "${APA_FIXER}"
         "${PSU_EXTRACT}"
         "${SQLITE}"
+        "${ASSETS_DIR}/NHDDL/nhddl.elf"
+        "${ASSETS_DIR}/osdmenu/hosdmenu.elf"
+        "${ASSETS_DIR}/osdmenu/OSDMBR.XLF"
+        "${ASSETS_DIR}/neutrino/neutrino.elf"
+        "${ASSETS_DIR}/OPL/OPNPS2LD.ELF"
+        "${ASSETS_DIR}/Icon-templates/PS1-Template.png"
+        "${ASSETS_DIR}/POPStarter/POPSTARTER.ELF"
+        "${ASSETS_DIR}/POPStarter/icon.sys"
+        "${ASSETS_DIR}/POPStarter/CHEATS.TXT"
+        "${ASSETS_DIR}/music/bitrate"
+        "${ASSETS_DIR}/music/music.db"
+        "${ASSETS_DIR}/kernel/vmlinux"
+        "${ASSETS_DIR}/kernel/vmlinux_jpn"
+        "${ASSETS_DIR}/kernel/ps2-linux-ntsc"
+        "${ASSETS_DIR}/kernel/ps2-linux-vga"
+        "${ASSETS_DIR}/kernel/o.tm2"
+        "${ASSETS_DIR}/kernel/x.tm2"
+        "${ASSETS_DIR}/autorun.ico"
+        "${TOOLKIT_PATH}/.envrc"
+        "${SCRIPTS_DIR}/nix/flake.lock"
+        "${SCRIPTS_DIR}/nix/flake.nix"
     )
 
     # List of required non-empty directories
     local required_dirs=(
-        "${SCRIPTS_DIR}/assets"
         "${TOOLKIT_PATH}/icons/art"
         "${TOOLKIT_PATH}/icons/ico"
+        "${TOOLKIT_PATH}/games"
+        "${TOOLKIT_PATH}/media"
     )
 
     # Check each file
@@ -262,6 +283,7 @@ check_dep(){
     check_cmd bchunk
     check_cmd pkg-config
     check_cmd ffmpegthumbnailer
+    check_cmd unrar-free
 
     if ! pkg-config --exists icu-i18n 2>/dev/null; then
         echo "[X] libicu-dev not found." >> "$LOG_FILE"

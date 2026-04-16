@@ -60,6 +60,7 @@
             patchelf
             ffmpegthumbnailer
             pkgsi686Linux.glibc
+            unrar-free
             psbbn
           ];
 

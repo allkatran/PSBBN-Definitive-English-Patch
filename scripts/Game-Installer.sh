@@ -37,6 +37,7 @@ HELPER_DIR="${SCRIPTS_DIR}/helper"
 ASSETS_DIR="${SCRIPTS_DIR}/assets"
 POPSTARTER="${ASSETS_DIR}/POPStarter/POPSTARTER.ELF"
 POPS_DIR="${ICONS_DIR}/POPS"
+POP_FIXES="${ASSETS_DIR}/Hugopocked POPStarter Fixes (2023-08-11)/POPS Game Fixes"
 NEUTRINO_DIR="${ASSETS_DIR}/neutrino"
 LOGS_DIR="${TOOLKIT_PATH}/logs"
 LOG_FILE="${LOGS_DIR}/game-installer.log"
@@ -58,6 +59,8 @@ ELF_LIST="${SCRIPTS_DIR}/tmp/elf.list"
 SAS_LIST="${SCRIPTS_DIR}/tmp/sas.list"
 APPS_LIST="${SCRIPTS_DIR}/tmp/app.list"
 OSDMENU_CNF="${SCRIPTS_DIR}/tmp/OSDMENU.CNF"
+OSDMBR_CNF="${SCRIPTS_DIR}/tmp/OSDMBR.CNF"
+
 arch="$(uname -m)"
 
 if [[ "$arch" = "x86_64" ]]; then
@@ -329,6 +332,14 @@ process_psu_files() {
     fi
 }
 
+POPS_PATCH_DL() {
+    wget -O "$ASSETS_DIR/Hugopocked_POPStarter_Fixes.rar" "$(
+        wget -qO- 'https://www.mediafire.com/file/rznkr05pci45w5p/Hugopocked_POPStarter_Fixes_%25282023-08-11%2529.rar/file' \
+        | grep -o 'https://download[^"]*Hugopocked+POPStarter+Fixes+%282023-08-11%29.rar' | head -n1)"
+
+    unrar-free x "${ASSETS_DIR}/Hugopocked_POPStarter_Fixes.rar" "$ASSETS_DIR"
+}
+
 VMC_TITLE() {
     local title="$1"
 
@@ -441,7 +452,7 @@ CREATE_VMC() {
     current_group=""
 
     echo | tee -a "${LOG_FILE}"
-    echo -n "Creating VMCs for PS1 games..." | tee -a "${LOG_FILE}"
+    echo "Creating VMCs for PS1 games..." | tee -a "${LOG_FILE}"
     if ! mkdir -p "${POPS_DIR}"; then
         error_msg "Error" "Failed to create VMC folder."
     fi
@@ -477,6 +488,25 @@ CREATE_VMC() {
         base_title="${base_title%" "}"
         mkdir -p "${POPS_DIR}/$folder_name"
         cd "${POPS_DIR}/$folder_name"
+
+        if [ -d "$ASSETS_DIR/Hugopocked POPStarter Fixes (2023-08-11)" ]; then
+            patch_path=""
+        
+            while IFS= read -r line; do
+                if [[ "$line" == /* ]]; then
+                    patch_folder="${line#/}"
+                    patch_path="$POP_FIXES/$patch_folder"
+                elif [[ "$line" == "$game_id" ]]; then
+                    echo "Applying patches for $game_id from $patch_folder" | tee -a "${LOG_FILE}"
+                    cp "$patch_path"/*.BIN . >> "${LOG_FILE}" 2>&1
+                    break
+                fi
+            done < $HELPER_DIR/POP-game-fixes.list
+        else
+            echo
+            echo "[X] Warning: Hugopocked POPStarter Fixes not present." | tee -a "${LOG_FILE}"
+        fi
+
         if ! cp "${ICONS_DIR}/ico/vmc/$game_id.ico" ./list.ico 2>/dev/null; then
             cp "${ICONS_DIR}/ico/vmc/VMC.ico" ./list.ico
             echo "$game_id $title" >> "${MISSING_VMC}"
@@ -763,6 +793,7 @@ update_apps() {
         # Compare versions
         if [[ "$(echo -e "$current_ver\n$latest_ver" | sort -V | tail -n 1)" != "$current_ver" ]]; then
             needs_update=true
+            rm -rf "${OPL}/neutrino"
         fi
     else
         local output
@@ -1099,15 +1130,6 @@ convert_vcd(){
     cd "${TOOLKIT_PATH}"
 }
 
-PP_NAME() {
-# Format game id correctly for partition
-    title_id=$(echo "$game_id" | sed -E 's/_(...)\./-\1/;s/\.//')
-
-    # Sanitize title by keeping only uppercase A-Z, 0-9, and underscores, and removing any trailing underscores
-    sanitized_title=$(echo "$title" | sed 's/²/2/g; s/³/3/g' | iconv -f UTF-8 -t ASCII//TRANSLIT | tr 'a-z' 'A-Z' | sed 's/[^A-Z0-9]/_/g' | sed 's/^_//; s/_$//; s/__*/_/g')
-    PARTITION_LABEL=$(printf "PP.%s.%s" "$title_id" "$sanitized_title" | cut -c 1-32 | sed 's/_$//')
-}
-
 create_info_sys() {
     local title="$1"
     local title_id="$2"
@@ -1248,7 +1270,12 @@ APP_ART() {
             cp "$png_file" "$dir/jkt_001.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create $dir/jkt_001.png. See ${LOG_FILE} for details."
             echo "Created: $dir/jkt_001.png"  | tee -a "${LOG_FILE}"
         fi
-        cp "$png_file" "${GAMES_PATH}/ART/${elf}_COV.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create ${GAMES_PATH}/ART/${elf}_COV.png. See ${LOG_FILE} for details."
+
+        if [ "${elf}" = "osdmenu-configurator.elf" ]; then
+            cp "${ARTWORK_DIR}/OSDMENUCONF.png" "${GAMES_PATH}/ART/${elf}_COV.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create ${GAMES_PATH}/ART/${elf}_COV.png. See ${LOG_FILE} for details."
+        else
+            cp "$png_file" "${GAMES_PATH}/ART/${elf}_COV.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create ${GAMES_PATH}/ART/${elf}_COV.png. See ${LOG_FILE} for details."
+        fi
         echo "Created: ${GAMES_PATH}/ART/${elf}_COV.png"  | tee -a "${LOG_FILE}"
     else
         echo "Artwork not found locally for $APP_ID. Attempting to download from the PSBBN art database..." | tee -a "${LOG_FILE}"
@@ -1261,7 +1288,11 @@ APP_ART() {
                 cp "$png_file" "$dir/jkt_001.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create $dir/jkt_001.png. See ${LOG_FILE} for details."
                 echo "Created: $dir/jkt_001.png"  | tee -a "${LOG_FILE}"
             fi
-            cp "$png_file" "${GAMES_PATH}/ART/${elf}_COV.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create ${GAMES_PATH}/ART/${elf}_COV.png. See ${LOG_FILE} for details."
+            if [ "${elf}" = "osdmenu-configurator.elf" ]; then
+                cp "${ARTWORK_DIR}/OSDMENUCONF.png" "${GAMES_PATH}/ART/${elf}_COV.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create ${GAMES_PATH}/ART/${elf}_COV.png. See ${LOG_FILE} for details."
+            else
+                cp "$png_file" "${GAMES_PATH}/ART/${elf}_COV.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create ${GAMES_PATH}/ART/${elf}_COV.png. See ${LOG_FILE} for details."
+            fi
             echo "Created: ${GAMES_PATH}/ART/${elf}_COV.png"  | tee -a "${LOG_FILE}"
         else
             rm -f "$png_file"
@@ -1548,6 +1579,16 @@ if find "${OPL}/CD" "${OPL}/DVD" -maxdepth 1 -type f \( -iname "*.iso" -o -iname
     PS2_GAMES_ON_OPL=true
 fi
 
+if [[ ! -f "${OPL}/conf_opl.cfg" ]]; then
+    cat > "${OPL}/conf_opl.cfg" <<EOL
+enable_coverart=1
+default_device=0
+usb_mode=2
+app_mode=2
+enable_bdm_hdd=1
+EOL
+fi
+
 UNMOUNT_OPL
 
 # Check if the Python virtual environment exists
@@ -1731,17 +1772,17 @@ echo
 echo "     - 100% open-source game and application loader:"
 echo "       https://github.com/ps2homebrew/Open-PS2-Loader"
 echo
-echo "  2) Neutrino"
+echo "  2) NHDDL"
 echo
-echo "     - Small, fast, and modular PS2 device emulator:"
-echo "       https://github.com/rickgaiser/neutrino"
+echo "     - A launcher for Neturino, a small, fast, and modular PS2 device emulator:"
+echo "       https://github.com/pcm720/nhddl"
 echo
 
 while true; do
     read -p "Enter 1 or 2: " choice
     case "$choice" in
         1) LAUNCHER="OPL"; DESC2="Open PS2 Loader (OPL)"; break ;;
-        2) LAUNCHER="NEUTRINO"; DESC2="Neutrino"; break ;;
+        2) LAUNCHER="NEUTRINO"; DESC2="NHDDL"; break ;;
         *) echo; echo "Invalid choice. Please enter 1 or 2." ;;
     esac
 done
@@ -1897,8 +1938,12 @@ activate_python
 # Rename .vcd to .VCD
 for file in "${GAMES_PATH}/POPS"/*.vcd; do
     [ -e "$file" ] || continue  # skip if no match
+
+    tmpfile="${file%.vcd}.tmp"
     newfile="${file%.vcd}.VCD"
-    mv -v -- "$file" "$newfile" >> "$LOG_FILE" 2>&1 || error_msg "Error" "Failed to rename $file."
+
+    mv -- "$file" "$tmpfile" &&
+    mv -- "$tmpfile" "$newfile" >> "$LOG_FILE" 2>&1 || error_msg "Error" "Failed to rename $file."
 done
 
 echo  >> "${LOG_FILE}"
@@ -2475,12 +2520,11 @@ if [ -f "$ALL_GAMES" ]; then
                     rm -f "$file"
                 fi
             done
+            cp ${ARTWORK_DIR}/tmp/* ${ARTWORK_DIR} >> "${LOG_FILE}" 2>&1
         else
             echo | tee -a "${LOG_FILE}"
             echo "No artwork to convert in ${input_dir}" | tee -a "${LOG_FILE}"
         fi
-
-        cp ${ARTWORK_DIR}/tmp/* ${ARTWORK_DIR} >> "${LOG_FILE}" 2>&1
     fi
 
     echo | tee -a "${LOG_FILE}"
@@ -2636,11 +2680,11 @@ if [ -f "$ALL_GAMES" ]; then
     # Read the file line by line
 
     exec 3< "$ALL_GAMES"
-    while IFS='|' read -r title game_id publisher disc_type file_name jpn_title <&3; do
+    while IFS='|' read -r title game_id publisher disc_type file_name jpn_title partition_label <&3; do
         echo | tee -a "${LOG_FILE}"
         echo "Processing $title..." 
         # Create a sub-folder named after the game_id
-        game_dir="$ICONS_DIR/$game_id"
+        game_dir="$ICONS_DIR/$partition_label"
         mkdir -p "$game_dir" 2>>"${LOG_FILE}" || error_msg "Error" "Failed to create $dir."
 
         if [[ "$LANG" == "jpn" && -z "$jpn_title" ]]; then
@@ -2710,7 +2754,11 @@ if [ -f "$ALL_GAMES" ]; then
             # Copy the matching .png file and rename it to jkt_001.png
             png_file="${TOOLKIT_PATH}/icons/art/${game_id}.png"
             if [[ -s "$png_file" ]]; then
-                cp "$png_file" "${game_dir}/jkt_001.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create $game_dir/jkt_001.png. See ${LOG_FILE} for details."
+                if [[ "$disc_type" == "POPS" ]]; then
+                    convert "${ASSETS_DIR}/Icon-templates/PS1-Template.png" \( "$png_file" -resize 197x197! \) -geometry +42+27 -composite "${game_dir}/jkt_001.png"
+                else
+                    cp "$png_file" "${game_dir}/jkt_001.png" 2>> "${LOG_FILE}" || error_msg "Error" "Failed to create $game_dir/jkt_001.png. See ${LOG_FILE} for details."
+                fi
                 echo "Created: $game_dir/jkt_001.png"  | tee -a "${LOG_FILE}"
             else
                 echo "$game_id $title" >> "${MISSING_ART}"
@@ -2747,7 +2795,6 @@ if [ -f "$ALL_GAMES" ]; then
             esac
         fi
 
-        PP_NAME
         # Generate the system.cnf files
         # Determine the launcher value for this specific game
         if [[ "$disc_type" == "POPS" ]]; then
@@ -2848,6 +2895,20 @@ if [ "$PS2_VMC" = "y" ] && [ -s "${PS2_LIST}" ]; then
     CREATE_PS2_VMC
 fi
 
+# Enable Compatibility Mode 1 for all ZSO files in OPL game configs
+exec 3< "${PS2_LIST}"
+while IFS='|' read -r title game_id publisher disc_type file_name jpn_title <&3; do
+    if [[ "$file_name" == *.zso || "$file_name" == *.ZSO ]]; then
+        cfg_file="${OPL}/CFG/${game_id}.cfg"
+        if [[ -f "$cfg_file" ]] && grep -q '^\$Compatibility=' "$cfg_file"; then
+            : # Compatibility modes already configured
+        else
+            printf '$Compatibility=1\r\n' >> "$cfg_file"
+        fi
+    fi
+done
+exec 3<&-
+
 echo | tee -a "${LOG_FILE}"
 echo "All assets have been sucessfully created." | tee -a "${LOG_FILE}"
 echo | tee -a "${LOG_FILE}"
@@ -2864,6 +2925,14 @@ if [ "$OS" = "PSBBN" ]; then
 fi
 
 if [ -s "${PS1_LIST}" ]; then
+    if [ ! -d "$ASSETS_DIR/Hugopocked POPStarter Fixes (2023-08-11)" ]; then
+        echo | tee -a "${LOG_FILE}"
+        echo -n "Downloading Hugopocked POPStarter Fixes..." | tee -a "${LOG_FILE}"
+        POPS_PATCH_DL >> "${LOG_FILE}" 2>&1
+        echo | tee -a "${LOG_FILE}"
+    else
+        echo "Hugopocked POPStarter Fixes are present." >> "${LOG_FILE}"
+    fi
     CREATE_VMC
 fi
 
@@ -2928,6 +2997,9 @@ cat "${SAS_LIST}" >> "${APPS_LIST}" 2>> "${LOG_FILE}"
 cp "${STORAGE_DIR}/__sysconf/osdmenu/OSDMENU.CNF" "${OSDMENU_CNF}"
 sed -i '/^name_OSDSYS_ITEM/d; /^path/d; /^arg_OSDSYS_ITEM/d;' "$OSDMENU_CNF"
 
+# Ensure the file ends with a newline
+[ -n "$(tail -c1 "$OSDMENU_CNF" | tr -d '\n')" ] && echo >> "$OSDMENU_CNF"
+
 if [ "$LAUNCHER" = "OPL" ]; then
     {
         echo "name_OSDSYS_ITEM_1 = Open PS2 Loader"
@@ -2974,6 +3046,26 @@ while IFS=',' read -r title elf title_id; do
 done < "$APPS_LIST"
 
 cp -f "${OSDMENU_CNF}" "${STORAGE_DIR}/__sysconf/osdmenu/OSDMENU.CNF"
+echo | tee -a "${LOG_FILE}"
+
+echo -n "Updating OSDMenu MBR boot keys..." | tee -a "${LOG_FILE}"
+cp "${STORAGE_DIR}/__sysconf/osdmenu/OSDMBR.CNF" "${OSDMBR_CNF}"
+
+# Remove any existing boot_square lines
+sed -i '/^boot_square/d' "${OSDMBR_CNF}" 2>> "${LOG_FILE}"
+
+# Ensure the file ends with a new line
+[ -n "$(tail -c1 "$OSDMBR_CNF" | tr -d '\n')" ] && echo >> "$OSDMBR_CNF"
+{
+    if [ "$LAUNCHER" = "OPL" ]; then
+        echo 'boot_square = hdd0:__system:pfs:launcher/OPNPS2LD.ELF'
+    else
+        echo 'boot_square = hdd0:__system:pfs:launcher/nhddl.elf'
+        echo 'boot_square_arg1 = -mode=ata'
+    fi
+} >> "${OSDMBR_CNF}"
+
+cp -f "${OSDMBR_CNF}" "${STORAGE_DIR}/__sysconf/osdmenu/OSDMBR.CNF"
 
 echo | tee -a "${LOG_FILE}"
 
@@ -3249,7 +3341,7 @@ if [ -f "$ALL_GAMES" ]; then
 
     # Reverse the lines of the file using tac and process each line
     for line in "${reversed_lines[@]}"; do
-        IFS='|' read -r title game_id publisher disc_type file_name <<< "$line"
+        IFS='|' read -r title game_id publisher disc_type file_name jpn_title partition_label <<< "$line"
 
         APA_SIZE_CHECK
 
@@ -3259,16 +3351,14 @@ if [ -f "$ALL_GAMES" ]; then
             break
         fi
 
-        PP_NAME
-
         COMMANDS="device ${DEVICE}\n"
-        COMMANDS+="mkpart ${PARTITION_LABEL} 8M PFS\n"
+        COMMANDS+="mkpart ${partition_label} 8M PFS\n"
         if [ "$OS" = "PSBBN" ]; then
-            COMMANDS+="mount ${PARTITION_LABEL}\n"
+            COMMANDS+="mount ${partition_label}\n"
             COMMANDS+="cd /\n"
 
             # Navigate into the sub-directory named after the gameid
-            COMMANDS+="lcd '${ICONS_DIR}/${game_id}'\n"
+            COMMANDS+="lcd '${ICONS_DIR}/${partition_label}'\n"
             COMMANDS+="mkdir res\n"
             COMMANDS+="cd res\n"
             COMMANDS+="put info.sys\n"
@@ -3289,9 +3379,9 @@ if [ -f "$ALL_GAMES" ]; then
 
         PFS_COMMANDS
 
-        cd "${ICONS_DIR}/$game_id" 2>>"${LOG_FILE}" || error_msg "Error" "Failed to navigate to ${ICONS_DIR}/$game_id."
-        sudo "${HDL_DUMP}" modify_header "${DEVICE}" "${PARTITION_LABEL}" >> "${LOG_FILE}" 2>&1 || error_msg "Error" "Failed to modify header of ${PARTITION_LABEL}."
-        echo "Created $PARTITION_LABEL" | tee -a "${LOG_FILE}"
+        cd "${ICONS_DIR}/$partition_label" 2>>"${LOG_FILE}" || error_msg "Error" "Failed to navigate to ${ICONS_DIR}/$game_id."
+        sudo "${HDL_DUMP}" modify_header "${DEVICE}" "${partition_label}" >> "${LOG_FILE}" 2>&1 || error_msg "Error" "Failed to modify header of ${partition_label}."
+        echo "Created $partition_label" | tee -a "${LOG_FILE}"
         echo >> "${LOG_FILE}"
 
         ((i++))

@@ -28,7 +28,7 @@ This project uses [webhook.site](https://webhook.site/) to automatically contrib
 - Available in English, German, Italian, Portuguese (Brazil), Spanish, French, and the original Japanese
 - Compatible with any fat model PS2 console as well as [PS2 Slim SCPH-700xx models](#early-scph-1000018000-and-slim-scph-700xx-consoles) with an [IDE Resurrector](https://gusse.in/shop/ps2-modding-parts/ide-resurrector-origami-v0-7-flex-cable-for-ps2-slim-spch700xx/) or similar hardware mod, regardless of region
 - DNAS authorization checks bypassed to enable access the online channels
-- English translations of the [online channels](#internet-channel) from Sony, Hudson, EA, Konami, Capcom, Namco, KOEI, and Bandai hosted by vitas155 at [psbbn.ru](https://psbbn.ru/) (work in progress)
+- English translations of the [online channels](#internet-channel) from Sony, Hudson, EA, Konami, Capcom, Namco, KOEI, Bandai, So-Net, and BIGLOBE hosted by vitas155 at [psbbn.ru](https://psbbn.ru/) (work in progress)
 - Access the original Japanese [online channels](#internet-channel) if you select Japanese as your language
 - **Audio Player** feature re-added to the [Music Channel](#music-channel) from an earlier release of PSBBN, allowing compatibility with NetMD MiniDisc Recorders[*](#known-issues)
 - Associated manual pages and troubleshooting regarding the **Audio Player** feature translated and re-added to the user guide
@@ -42,13 +42,13 @@ This project uses [webhook.site](https://webhook.site/) to automatically contrib
 - [POPS](#popstarter) partition up to 113 GB for PS1 games
 - Set a custom size for your music partition. Originally limited to 5 GB. Now the partition can be up to 113 GB for around 180 albums[*](#known-issues)
 - Set a custom size for your contents partition for the storage of movies and photos. Originally limited to 5 GB, can now be up to 113 GB
-- [Virtual Memory Card Groups](#virtual-memory-cards) for PS1 and PS2 games
+- [Virtual Memory Cards and VMC Groups](#virtual-memory-cards) for PS1 and PS2 games
 - Full [Game ID](#game-id) support for the **Pixel FX Retro GEM** and **MemCard Pro/SD2PSX** — works with installed games and apps, as well as physical PS1 and PS2 game discs
 - [HOSDMenu](#hosdmenu): A patched **HDD-OSD** that brings a number of improvements
 - [PSBBN and HOSDMenu installer](#install-psbbn-and-hosdmenu) makes setup easy
 - [Game and App Installer](#install-games-and-apps) fully automates the installation of PS1 and PS2 games as well as `ELF` and [SAS-compliant](#save-application-system-sas) homebrew apps
-- A choice of [OPL](#open-ps2-loader-opl) or [Neutrino](#neutrino-and-nhddl) for you game launcher
-- Includes the apps [wLaunchELF_ISR](#wlaunchelf_isr), [OSDMenu Configurator](#osdmenu-configurator), with a choice of either [OPL](#open-ps2-loader-opl) or [NHDDL](#neutrino-and-nhddl)
+- A choice of [OPL](#open-ps2-loader-opl) or [NHDDL](#nhddl) for you game launcher
+- Includes the apps [wLaunchELF_ISR](#wlaunchelf_isr) and [OSDMenu Configurator](#osdmenu-configurator)
 - [Music Installer](#install-music) for converting and installing music
 - [Movie Installer](#install-movies) for converting and installing videos
 - [Photo Installer](#install-photos) for converting and installing images
@@ -56,19 +56,48 @@ This project uses [webhook.site](https://webhook.site/) to automatically contrib
 
 # Changelog
 
-**March 27th, 2026 - Virtual Memory Cards (VMCs) for PS2 games**
+**April 16, 2026 - Improved PS1 Compatibility, PS2 VMCs, OPL Update & More!**
+- **[OPL](#open-ps2-loader-opl)** updated to **v1.2.0 Beta-2241-39afed2** - fixes configuration read issues on the internal drive’s exFAT partition
+- **[NHDDL](#nhddl)** updated to **[v1.2.2](https://github.com/pcm720/nhddl/releases/tag/v1.2.2)** 
+- **[Neutrino](#nhddl)** updated to **[v1.8.0](https://github.com/rickgaiser/neutrino/releases/tag/v1.8.0)** - reduces game launch time by around 4 seconds
+- **[OSDMenu](#osdmenu-mbr)** updated to **v1.2.1** - fixes issues with launch arguments when starting ELFs via gamepad button at startup
+
+**[Game Installer](#install-games-and-apps):**
+- Assigns chosen game launcher ([OPL](#open-ps2-loader-opl) or [NHDDL](#nhddl)) to the □ button, allowing it to be quickly launched at startup 
+- Creates an **[OPL](#open-ps2-loader-opl)** configuration file on your drive. BDM HDD, Apps, and artwork are now automatically enabled
+- Games in the `ZSO` format now have "Compatibility Mode 1" automatically enabled in their per-game **[OPL](#open-ps2-loader-opl)** configurations
+- Multiple games that share the same Title ID can now be installed, allowing the installation of a variety of mods
+- PS1 games now feature a new PSN-style border in the PSBBN **[Game Collection](#game-collection)**, making it easier to distinguish between PS1 and PS2 games
+- Automatic installation of **[HugoPocked POPStarter fixes](https://www.psx-place.com/threads/hugopocked-fixes-for-popstarter.39750/)**, improving compatibility with over 100 PS1 games
+
+**Bug Fixes:**
+- **[OSDMenu Configurator](#osdmenu-configurator)** now has the correct artwork in the Apps tab in **[OPL](#open-ps2-loader-opl)**
+- Fixed `.vcd` to `.VCD` renaming on case-insensitive filesystems
+- Deletes existing `neutrino` folder before updating to prevent conflicts
+- Ensures OSDMenu config files ends with a new line before appending content
+
+**README**:
+- New section [Boot Options](#boot-options)
+- Added table for [POPStarter hotkeys](#popstarter)
+- Added Debian to the list of [recommended operating systems](#installing-on-linux)
+- Added new features to [Install Games and Apps](#install-games-and-apps) section
+- Changed references from Neutrino to [NHDDL](#nhddl), reflecing how games now launch
+- General improvments
+
+**March 27, 2026 - Virtual Memory Cards (VMCs) for PS2 games**
 - The **[Game Installer](#game-and-app-installer)** now offers the option to enable **[VMCs](#virtual-memory-cards)** for PS2 games. No additional setup is necessary
-- This feature is compatible with both **[OPL](#open-ps2-loader-opl)** and **[Neutrino](#neutrino-and-nhddl)**
+- This feature is compatible with both **[OPL](#open-ps2-loader-opl)** and **[NHDDL](#nhddl)**
 - Supports **[VMC Groups](#virtual-memory-cards)**
 
-**March 26th, 2026 - 4.2.0 Update: New Online Channels plus French Localisation**
+**March 26, 2026 - 4.2.0 Update: New Online Channels plus French Localisation**
 - PSBBN system software updated to patch 4.2.0
 - The Game Channel has been renamed to the **[Internet Channel](#internet-channel)**, reflecting its online focus
 - New online channels added: BANDAI CHANNEL, So-Net, and BIGLOBE
 - Download new game trailer in higher quality, with thumbnails
 - French language support is now available for PSBBN
 
-**March 5th, 2026 - Movie and Photo Installers, OSDMenu Configurator and more!**  
+<details>
+<summary><b>March 05, 2026 - Movie and Photo Installers, OSDMenu Configurator and more!</summary></b> 
 <p></p>
 
 [![Movie and Photo Installers, OSDMenu Configurator and more!](https://github.com/user-attachments/assets/f0fae1ee-bf04-4aea-88a6-89e030926282)](https://youtu.be/_jKzzsClgOY)
@@ -129,9 +158,10 @@ This project uses [webhook.site](https://webhook.site/) to automatically contrib
 - Added a delay between unmounting and mounting filesystems to improve reliability
 - Fixed error tracking for SQLite
 - Improved art downloads for `SAS` and `ELF` apps
+</details>
 
 <details>
-<summary><b>January 8th, 2026 - PSBBN Definitive Project: New Name and Multilingual Support</b></summary>
+<summary><b>January 08, 2026 - PSBBN Definitive Project: New Name and Multilingual Support</b></summary>
 <p></p>
 
 [![PSBBN Definitive Project: New Name and Multilingual Support](https://github.com/user-attachments/assets/32bb93f2-c009-4b82-ba62-67933ff30e83)](https://www.youtube.com/watch?v=dvCt_ExHwro)
@@ -180,6 +210,7 @@ When the language is set to Japanese, titles of Japanese-region games are displa
 - Improved POPS English IGR message
 - Added warning to prevent internal scripts from being run directly
 - Added installation validation check to abort unsupported installs
+- **[NHDDL](#nhddl)** updated to version 1.2.1
 </details>
 
 <details>
@@ -225,7 +256,7 @@ Patches **HDD-OSD** and introduces several improvements:
 - **[Game Installer](#install-games-and-apps)** now requires **PSBBN Definitive Project v4.0.0** and above or **[HOSDMenu-only](#install-hosdmenu-only)**
 - Adds support for **[HOSDMenu](#hosdmenu)**-only setups
 - Updates **[OSDMenu MBR](#osdmenu-mbr)** and **[HOSDMenu](#hosdmenu)** if newer versions are available
-- Updates the **Navigator Menu** with shortcuts to your selected game launcher (**[OPL](#open-ps2-loader-opl)** or **[NHDDL](#neutrino-and-nhddl)**), **[HOSDMenu](#hosdmenu)** and **[wLaunchELF_ISR](#wlaunchelf_isr)**
+- Updates the **Navigator Menu** with shortcuts to your selected game launcher (**[OPL](#open-ps2-loader-opl)** or **[NHDDL](#nhddl)**), **[HOSDMenu](#hosdmenu)** and **[wLaunchELF_ISR](#wlaunchelf_isr)**
 - Updates the **[HOSDMenu](#hosdmenu)** config to display installed homebrew apps in the **OSDSYS menu**
 - Automatically converts PS1 `BIN/CUE` files to `VCD` and PS2 `BIN/CUE` file to `ISO`
 - PS1 games are now copied and synced through `PFS FUSE` using `rsync`, with visible progress during transfer
@@ -259,7 +290,7 @@ Patches **HDD-OSD** and introduces several improvements:
 - Updated disk number input to support values greater than 9
 - Gracefully exits if disk mounting fails
 
-**[NHDDL:](#neutrino-and-nhddl)**
+**[NHDDL:](#nhddl)**
 - Updated to version v1.2.0
 
 **`Setup.sh` and `flake.nix`:**
@@ -421,7 +452,7 @@ Patch v2.11 can be installed by running the [PSBBN Installer script](#install-ps
 - General improvements to error checking and messaging  
 - Fixed issues detecting success/failure of some `rsync` commands  
 - `rsync` now runs only when needed  
-- Improved update process for [POPStarter](#popstarter), [OPL](#open-ps2-loader-opl), [NHDDL, and Neutrino](#neutrino-and-nhddl)
+- Improved update process for [POPStarter](#popstarter), [OPL](#open-ps2-loader-opl), [NHDDL, and Neutrino](#nhddl)
 - Game Installer now installs [POPS](#popstarter) binaries if missing  
 - Reduced number of commands executed with `sudo`  
 - `ELF` files are now installed in folders and include a `title.cfg`  
@@ -468,12 +499,12 @@ Patch v2.11 can be installed by running the [PSBBN Installer script](#install-ps
   - Limited max BDM UDMA mode to UDMA4 to avoid compatibility issues with various SATA/IDE2SD adapters
 - Added a manual for PS1 games. It can be accessed in the [Game Collection](#game-collection) by selecting a game, pressing **△** and then selecting **Manual**
 - Transitioned to **BBN Launcher (BBNL)** version 2.0:
-  - Dropped PFS support in favour of loading [OPL](#open-ps2-loader-opl), [POPStarter](#popstarter), [Neutrino](#neutrino-and-nhddl), and configuration files from the exFAT partition to speed up initialization.
+  - Dropped PFS support in favour of loading [OPL](#open-ps2-loader-opl), [POPStarter](#popstarter), [Neutrino](#nhddl), and configuration files from the exFAT partition to speed up initialization.
   - Moved **BBNL** to the APA header to further improve loading times.
   - Removed dependency on renamed [POPStarter](#popstarter) `ELF` files to launch PS1 VCDs; [POPStarter](#popstarter) is now launched directly with a boot argument.
   - [NHDDL](https://github.com/pcm720/nhddl) now launches in ATA mode, improving startup time and avoiding potential error messages.
-- Updated [Neutrino](#neutrino-and-nhddl) to version 1.6.1
-- Updated [NHDDL](#neutrino-and-nhddl) to version MMCE + HDL Beta 4.17
+- Updated [Neutrino](#nhddl) to version 1.6.1
+- Updated [NHDDL](#nhddl) to version MMCE + HDL Beta 4.17
 - Added cover art from the [OPL Manager Art DB backups](https://oplmanager.com/site/index.php?backups). Artwork for PS2 games is now displayed in OPL/NHDDL
 - Added homebrew support to the `03-Game-Installer.sh` script. `ELF` files placed in the local `games/APPS` folder on your PC will be installed and appear in the [Game Collection](#game-collection) in PSBBN and the Apps tab in OPL
 - Apps now support [Game ID](#game-id) for both the Pixel FX Retro GEM and MemCard Pro/SD2PSX
@@ -487,8 +518,8 @@ Patch v2.11 can be installed by running the [PSBBN Installer script](#install-ps
 [![BBN Launcher, Neutrino & NHDDL](https://github.com/user-attachments/assets/8007d102-3019-4037-8c52-24d1454777da)](https://www.youtube.com/watch?v=0vpSiAa6ITc)
 
 - [OPL-Launcher-BDM](https://github.com/CosmicScale/OPL-Launcher-BDM) has been replaced by **BBN Launcher (BBNL)**
-- Added [Neutrino](#neutrino-and-nhddl) support. You can now choose between [Open PS2 Loader](#open-ps2-loader-opl) and [Neutrino](#neutrino-and-nhddl) as your game launcher
-- When using Neutrino as your game launcher, [NHDDL](#neutrino-and-nhddl) can be used to make per-game settings
+- Added [Neutrino](#nhddl) support. You can now choose between [Open PS2 Loader](#open-ps2-loader-opl) and [Neutrino](#nhddl) as your game launcher
+- When using Neutrino as your game launcher, [NHDDL](#nhddl) can be used to make per-game settings
 
 </details>
 
@@ -546,7 +577,7 @@ Patch v2.11 can be installed by running the [PSBBN Installer script](#install-ps
 
 </details>  
 
-# User Guide
+# Installation Guide
 ## Requirements
 The **PSBBN Definitive Project** script is essential for unlocking all the new features exclusive to version 2.0 and above. The script requires a PC with an x86-64 or ARM64 processor.
 
@@ -556,12 +587,12 @@ It is **recommended** to use a **fat PS2 console with an expansion bay** (**SCPH
 
 When using an official Sony Network Adapter, I would highly recommend installing a **Kaico** or **BitFunx IDE to SATA Upgrade Kit**.
 
-It is also compatible with the **PS2 Slim SCPH-700xx** model with an **[IDE Resurrector](https://gusse.in/shop/ps2-modding-parts/ide-resurrector-origami-v0-7-flex-cable-for-ps2-slim-spch700xx/)** or similar hardware mod, as well as **SCPH-10000 to SCPH-18000** models with an **official external HDD enclosure**. **[Additional setup is required for these consoles](#early-scph-10000–18000-and-slim-scph-700xx-consoles)**.
+**PSBBN** is also compatible with the **PS2 Slim SCPH-700xx** model with an **[IDE Resurrector](https://gusse.in/shop/ps2-modding-parts/ide-resurrector-origami-v0-7-flex-cable-for-ps2-slim-spch700xx/)** or similar hardware mod, as well as **SCPH-10000 to SCPH-18000** models with an **official external HDD enclosure**. **[Additional setup is required for these consoles](#early-scph-10000–18000-and-slim-scph-700xx-consoles)**.
 
 You will also need an HDD/SSD for your PS2 that is at least 32 GB, ideally between 256 GB and 2 TB. A SATA SSD is also highly recommended. The improved random access speed over a HDD really makes a big difference to the responsiveness of the PSBBN interface. To perform the installation, connect the HDD/SSD to your PC either directly via SATA or through a USB adapter.
 
 ## Installing on Linux
-64-bit Debian-based distributions using `apt`, Arch-based distributions using `pacman`, and Fedora-based[*](#troubleshooting) distributions using `dnf` are supported. Nix-based systems are also supported via flakes. Recommended distributions are Linux Mint, and for Raspberry Pi, Raspberry Pi OS.
+64-bit Debian-based distributions using `apt`, Arch-based distributions using `pacman`, and Fedora-based[*](#troubleshooting) distributions using `dnf` are supported. Nix-based systems are also supported via flakes. Recommended distributions are Linux Mint, Debian, and for Raspberry Pi, Raspberry Pi OS.
 
 **The PSBBN Definitive Project is a rolling release. To get automatic updates and the latest bug fixes, you must install the scripts using `git clone`.**
 
@@ -655,7 +686,7 @@ Installs both **PSBBN** and [HOSDMenu](#hosdmenu). Requires an official Sony Net
 - Downloads and installs the latest versions of the **PSBBN System Software** and **Language Pack** from [archive.org](https://archive.org/)
 - When the language is set to Japanese, the [Online Channels](#internet-channel) are also downloaded and installed from [archive.org](https://archive.org/)
 - Installs [OSDMenu MBR](#osdmenu-mbr) and [HOSDMenu](#hosdmenu)
-- Creates partitions for [POPS](#popstarter) (to store PS1 games), [Music](#install-music), and Contents (to store movies and photos), with user-defined sizes on the first 128 GB of the drive.
+- Creates partitions for [POPS](#popstarter) (to store PS1 games), [Music](#install-music), and Contents (to store [movies](#install-movies) and [photos](#install-photos)), with user-defined sizes on the first 128 GB of the drive.
 - Reserves space for 800 **Launcher partitions**, used to launch games and apps.
 - Runs [APA-Jail](#apa-jail), creating an exFAT partition using all remaining disk space (up to 2 TB) for the storage of PS2 games and apps
 
@@ -675,21 +706,25 @@ Selecting this option checks online for the latest versions of the **PSBBN Syste
 Fully automates the installation of PS1 and PS2 games, as well as homebrew apps:
 - Auto-detects your PS2 drive
 - Let you set a custom path to the `games` folder on your PC
-- Gives you a choice of [Open PS2 Loader (OPL)](#open-ps2-loader-opl) or [Neutrino](#neutrino-and-nhddl) for the game launcher
-- Installs any available updates for [Open PS2 Loader (OPL)](#open-ps2-loader-opl), [Neutrino](#neutrino-and-nhddl), and [NHDDL](#neutrino-and-nhddl)
+- Gives you a choice of [Open PS2 Loader (OPL)](#open-ps2-loader-opl) or [NHDDL](#nhddl) for the game launcher
+- Assigns chosen game launcher to the □ button, allowing it to be quickly launched at startup
+- Installs any available updates for [Open PS2 Loader (OPL)](#open-ps2-loader-opl), [NHDDL](#nhddl), and [Neutrino](#nhddl)
 - Downloads and installs the [POPS](#popstarter) binaries and installs [POPStarter](#popstarter)
 - Offers the option to apply a HDTV fix for PS1 games, useful for users with a TV that does not support 240p
 - Offers the option to [synchronise](#synchronize-all-games-and-apps) the games and apps on your PC with your PS2's drive, or to [add additional](#add-additional-games-and-apps) games and apps
 - Automatically converts PS2 games in `BIN/CUE` format to `ISO` when placed in the `CD` folder on your PC, and PS1 games in `BIN/CUE` format to `VCD` when placed in the `POPS` folder on your PC
+- For games in the `ZSO` format, "Compatibility Mode 1" is automatically enabled in their per-game [OPL](#open-ps2-loader-opl) configurations
 - Creates [Virtual Memory Cards (VMCs)](#virtual-memory-cards) for all PS1 games, with the option to enable VMCs for all PS2 games. Also creates [VMC Groups](#virtual-memory-cards) for games that can interact with each other's save data
+- Automatically downloads and installs [HugoPocked POPStarter fixes](https://www.psx-place.com/threads/hugopocked-fixes-for-popstarter.39750/), improving compatibility with over 100 PS1 games
 - Creates all assets including meta-data, artwork and icons for all your games/apps:
   - Downloads artwork for the PSBBN [Game Collection](#game-collection) from the [PSBBN Art Database](https://github.com/CosmicScale/psbbn-art-database) or IGN if not found in the database
   - Automatically contributes game artwork downloaded from IGN and reports missing artwork to the [PSBBN Art Database](https://github.com/CosmicScale/psbbn-art-database)
-  - Downloads cover art for PS2 games from the [OPL Manager art database](https://oplmanager.com/site/?backups) for display in [OPL](#open-ps2-loader-opl)/[NHDDL](#neutrino-and-nhddl)
+  - Downloads cover art for PS2 games from the [OPL Manager art database](https://oplmanager.com/site/?backups) for display in [OPL](#open-ps2-loader-opl)/[NHDDL](#nhddl)
   - Downloads icons for both games and [VMCs](#virtual-memory-cards) for [HOSDMenu's](#hosdmenu) Browser 2.0 from the [HDD-OSD Icon Database](https://github.com/cosmicscale/hdd-osd-icon-database). If icons are unavailable, but images for a game are available in the [OPL Manager Art Database](https://oplmanager.com/site/?backups), 3D icons will be automatically created.
   - Automatically contributes HDD-OSD icons and reports missing icons to the [HDD-OSD Icon Database](https://github.com/cosmicscale/hdd-osd-icon-database)
 - Updates shortcuts for homebrew apps in the [PSBBN Navigator Menu](#game-collection) and in the [HOSDMenu's](#hosdmenu) **OSDSYS menu**
 - Creates **launcher partitions**, making games and apps launchable from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#hosdmenu)
+- Creates an [OPL](#open-ps2-loader-opl) configuration file on your drive with BDM HDD, Apps, and artwork enabled
 
 ### Synchronize All Games and Apps
 This option updates the contents of your PS2’s storage to match the `games` folder on your PC. Any new games or apps are copied over, and any that were removed from your PC are deleted from the console.
@@ -701,9 +736,11 @@ To add or delete games and apps, just modify the contents of the `games` folder 
 ### Add Additional Games and Apps
 Alternatively, you can add PS2 games directly to the exFAT filesystem of your PS2 drive by placing `ISO` or `ZSO` files in the `CD` or `DVD` folders, and `ELF` or [SAS-compliant](#save-application-system-sas) `PSU` files in the `APPS` folder. PS1 `VCD` files can be placed in the `__.POPS` PFS filesystem.
 
-Selecting **Add Additional Games and Apps** adds the new content to the **[PSBBN Game Collection](#game-collection)** and [HOSDMenu](#hosdmenu). Additionally, any new PS1 or PS2 games and apps found in the `games` folder on your PC will also be installed. As with syncing: PS2 `ISO`, `ZSO` or `BIN/CUE` files go in the `CD` folder; `ISO` or `ZSO` files in the `DVD` folder; PS1 `VCD` or `BIN/CUE` files in the `POPS` folder; and `ELF` or [SAS-compliant](#save-application-system-sas) `PSU` files in the `APPS` folder.
+Selecting **Add Additional Games and Apps** adds the new content to the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#hosdmenu). Additionally, any new PS1 or PS2 games and apps found in the `games` folder on your PC will also be installed. As with syncing: PS2 `ISO`, `ZSO` or `BIN/CUE` files go in the `CD` folder; `ISO` or `ZSO` files in the `DVD` folder; PS1 `VCD` or `BIN/CUE` files in the `POPS` folder; and `ELF` or [SAS-compliant](#save-application-system-sas) `PSU` files in the `APPS` folder.
 
 PS2 games and homebrew apps can be manually deleted from the exFAT filesystem on the PS2 drive, and PS1 games can be deleted from the `__.POPS` PFS filesystem. Selecting **Add Additional Games and Apps** will remove any deleted titles from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#hosdmenu).
+
+**NOTE:** To use `ZSO` files, you must select [OPL](#open-ps2-loader-opl) as your game launcher. When using NHDDL, any `ZSO` files in your `games` folder or on the PS2 drive are decompressed into `ISO` files when installed.
 
 ## Install Media
 Select **Install Media** from the main menu and you will be presented with the following option:
@@ -785,7 +822,18 @@ This option removes all game artwork and icons that are stored locally on your P
 
 You might want to clear the cache if games display incorrect or low-quality artwork, as updated artwork may now be available.
 
-# Notes
+# User Guide
+
+## Boot Options
+You can hold certain controller buttons while powering on the PS2 console to change how the system boots:
+
+| Button | PS2 System Software | Boot Behavior                                      |
+|--------|---------------------|----------------------------------------------------|
+| None   | PSBBN + HOSDMenu    | Automatically boots PSBBN                          |
+| None   | HOSDMenu only       | Automatically boots HOSDMenu                       |
+| ✕      | PSBBN + HOSDMenu    | Boots HOSDMenu                                     |
+| ○      | PSBBN + HOSDMenu    | Boots PS2 Linux (if installed)                     |
+| □      | Any configuration   | Boots the selected game launcher ([OPL](#open-ps2-loader-opl) or [NHDDL](#nhddl)) |
 
 ## Game Collection
 You can find the **Game Collection** in the **PSBBN Top Menu**.
@@ -798,19 +846,34 @@ You can find the **Game Collection** in the **PSBBN Top Menu**.
 - You can set shortcuts for up to four items by pressing **△** on a highlighted game and selecting *Add to Navigator Menu*. You can quickly access your shortcuts by pressing **SELECT**.
 
 ## Open PS2 Loader (OPL)
-[Open PS2 Loader (OPL)](https://github.com/ps2homebrew/Open-PS2-Loader) is a 100% open source game and application loader for the PS2. If you selected OPL as your game launcher, per-game settings assigned in OPL are reflected when launching games from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#hosdmenu).
+[Open PS2 Loader (OPL)](https://github.com/ps2homebrew/Open-PS2-Loader) is a 100% open source game and application loader for the PS2. If you select OPL as your game launcher when [installing games and apps](#install-games-and-apps), per-game settings assigned in OPL are reflected when launching games from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#hosdmenu).
 
-If you have problems saving OPL settings, or if games do not appear in the games list, see [troubleshooting](#problems-launching-games).
-
-## Neutrino and NHDDL
-[Neutrino](https://github.com/rickgaiser/neutrino) is a lightweight device emulator for PS2. [NHDDL](https://github.com/pcm720/nhddl) is a frontend for Neutrino. If you selected Neutrino as your game launcher, per-game settings assigned in [NHDDL](https://github.com/pcm720/nhddl) are reflected when launching games from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#hosdmenu)  
-
-**NOTE:** Neutrino does not support compressed `ZSO` files. If `ZSO` files are found in your `games` folder, or on the PS2 drive, they will be automatically decompressed to `ISO` files by the [Game Installer](#install-games-and-apps).
+## NHDDL
+[NHDDL](https://github.com/pcm720/nhddl) is a launcher for [Neutrino](https://github.com/rickgaiser/neutrino), a small, fast, and modular PS2 device emulator. If you select NHDDL as your game launcher when [installing games and apps](#install-games-and-apps), per-game settings assigned in NHDDL are reflected when launching games from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#hosdmenu).
 
 ## POPStarter
 **POPS** is an official Sony PS1 emulator for PS2, originally released exclusively in Japan as a way to distribute PS1 games over the internet to **PSBBN** users. **POPStarter** is a homebrew launcher for **POPS** that enables the emulator to play any PS1 game from internal and external drives.
 
-Hotkey button combinations are supported for disc swapping and various other options. Full details can be found in the **Manual** of each installed PS1 game. To access it, in **PSBBN** select a game in the **[Game Collection](#game-collection)**, press **△** then select **Manual**.
+When installing PS1 games, **[HugoPocked POPStarter fixes](https://www.psx-place.com/threads/hugopocked-fixes-for-popstarter.39750/)** are automatically downloaded and insatlled, improving compatibility with over 100 PS1 games.
+
+Hotkey button combinations are supported for disc swapping and various other options:
+
+| Hotkey               | Function                       |
+|----------------------|--------------------------------|
+| SELECT + START + L1  | Quit Game                      |
+| SELECT + L2 + R2 + ✕ | Software Reset                 |
+| SELECT + L1 + R2 	   | Enable smooth texture mapping  |
+| SELECT + L2 + R1     | Disable smooth texture mapping |
+| SELECT + R1 + R2     | Enable scanlines               |
+| SELECT + L1 + L2     | Disable scanlines              |
+| SELECT + L2 + R2 + △ | Open PlayStation CD lid        |
+| SELECT + L2 + R2 + ↑ | Insert disc 1                  |
+| SELECT + L2 + R2 + → | Insert disc 2                  |
+| SELECT + L2 + R2 + ↓ | Insert disc 3                  |
+| SELECT + L2 + R2 + ← | Insert disc 4                  |
+| SELECT + L2 + R2 + □ | Close PlayStation CD lid       |
+
+Details on hotkeys can also be found in the **Manual** of each installed PS1 game. To access it, in the **[PSBBN Game Collection](#game-collection)**, press **△** then select **Manual**.
 
 ## Virtual Memory Cards
 A **Virtual Memory Card (VMC)** allows you to store game progress on your PlayStation 2’s internal drive rather than on a standard Memory Card.
@@ -819,7 +882,7 @@ A **POPStarter VMC** is created for every PS1 game. These can be found in **PSBB
 
 When running the [Game Installer](#install-games-and-apps), you will be given the option to enable **VMCs** for all your PS2 games.
 
-Both PS1 and PS2 games support **VMC Groups**, enabling certain games to share a VMC and access save data created by other titles. For example, *Metal Gear Solid’s* Psycho Mantis can comment on other Konami games you've played, and money from Gran Turismo 3 can be transferred to Gran Turismo 4.
+Both PS1 and PS2 games support **VMC Groups**, enabling certain games to share a VMC and access save data created by other titles. For example, *Metal Gear Solid’s* Psycho Mantis can comment on other Konami games you've played, and credits from Gran Turismo 3 can be transferred to Gran Turismo 4.
 
 ## Game ID
 **Game ID** for the **Retro GEM**, **MemCard Pro 2**, and **SD2PSX** is fully supported when launching PS1 games, PS2 games, and homebrew apps from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#hosdmenu), as well as physical PS1 and PS2 game discs.
@@ -830,8 +893,8 @@ The **Retro GEM** is a digital to digital HDMI output upgrade for multiple conso
 
 ## Exiting Games
 - To quit PS1 games, press `L1 + SELECT + START`
-- If you are using [OPL](#open-ps2-loader-opl) as your game launcher, to quit PS2 games, press `L1 + L2 + R1 + R2 + SELECT + START` and to power off the console press `L1 + L2 + L3 + R1 + R2 + R3`
-- Neutrino does not have an in-game reset function
+- If you selected [OPL](#open-ps2-loader-opl) as your game launcher, to quit PS2 games, press `L1 + L2 + R1 + R2 + SELECT + START` and to power off the console press `L1 + L2 + L3 + R1 + R2 + R3`
+- If you selected [NHDDL](#nhddl) as your game laucmher, you will not be able to use the in-game reset as Neutrino does not support this function
 
 ## Launching PS1 and PS2 Game Discs
 When running PSBBN or [HOSDMenu](#hosdmenu), simply insert a game disc into the DVD drive. The game will boot and set the [Game ID](#game-id) on both the **Retro GEM** and **MemCard Pro/SD2PSX** accordingly.
@@ -843,7 +906,7 @@ For physical PlayStation 2 (PS2) discs:
 - Applies automatic PS2 logo patching, allowing [MechaPwn](https://github.com/MechaResearch/MechaPwn) users to launch imports and master discs without skipping the PlayStation 2 logo or encountering a corrupted logo screen.
 
 ## Save Application System (SAS)
-**Save Application System (SAS)** is a new standard for distributing homebrew applications for the PS2. All SAS-compliant apps are packaged in a `PSU` file and include icons and metadata, making it the recommended way to install homebrew on **PSBBN** and [HOSDMenu](#hosdmenu). You can download SAS compliant apps from the [PS2 Homebrew Store](https://ps2homebrewstore.com/).
+**Save Application System (SAS)** is a new standard for distributing homebrew applications for the PS2. All SAS-compliant apps are packaged in a `PSU` file and include icons and metadata, making it the recommended way to [install homebrew apps](#install-games-and-apps) on **PSBBN** and [HOSDMenu](#hosdmenu). You can download SAS compliant apps from the [PS2 Homebrew Store](https://ps2homebrewstore.com/).
 
 ## Internet Channel
 On the **Internet Channel**, you can access archives of various publishers’ online channels, just as they appeared in the early 2000s. The channels have been translated into English (work in progress). If you have a Japanese install of PSBBN, you will have access to the original Japanese versions. To view these online channels, your PlayStation 2 system must be connected to the internet.
@@ -866,7 +929,7 @@ The Photo Channel allows you to view photos stored on the PS2's internal drive o
 ## OSDMenu MBR
 Written by [pcm720](https://github.com/pcm720). This program is executed on every system boot and when an application is launched from **PSBBN**. It is a homebrew replacement for Sony’s original MBR program. It is responsible for initializing the hardware, as well as launching applications and game discs.
 
-**OSDMenu MBR** comes with many advantages over the original implementation including support for launching ELFs by holding a gamepad button at startup, automatic PS2 logo patching when [launching PS2 game discs](#launching-ps1-and-ps2-game-discs), adjusting video modes when [launching imported PS1 game discs](#launching-ps1-and-ps2-game-discs), [Visual Game ID](#game-id) for the Retro GEM, modifying system settings, and launching games via [OPL](#open-ps2-loader-opl), [NHDDL](#neutrino-and-nhddl), and [POPStarter](#popstarter).
+**OSDMenu MBR** comes with many advantages over the original implementation including support for launching ELFs by holding a gamepad button at startup, automatic PS2 logo patching when [launching PS2 game discs](#launching-ps1-and-ps2-game-discs), adjusting video modes when [launching imported PS1 game discs](#launching-ps1-and-ps2-game-discs), [Visual Game ID](#game-id) for the Retro GEM, modifying system settings, and launching games via [OPL](#open-ps2-loader-opl), [NHDDL](#nhddl), and [POPStarter](#popstarter).
 
 The full readme can be found [here](https://github.com/pcm720/OSDMenu/blob/main/mbr/README.md).
 
@@ -906,7 +969,7 @@ A fork of [wLaunchELF](https://github.com/ps2homebrew/wLaunchELF) written by [Ma
 **PSBBN** was originally limited to just 128 GB of usable storage. **APA-Jail** allows for just over 2 TB.  
 **APA-Jail**, created and developed by [Berion](https://www.psx-place.com/resources/authors/berion.1431/), enables the PS2's APA partitions to coexist with an exFAT partition. Up to 128 GB of the HDD/SSD is reserved for APA partitions, while the remaining space (up to 2 TB) is formatted as exFAT. This setup allows **PSBBN** and [HOSDMenu](#hosdmenu) to be installed on the APA partitions, while PS2 games and homebrew can be installed on the exFAT partition.
 
-[OSDMenu MBR](#osdmenu-mbr) resides in the `__mbr` partition and launches apps, and directs [Open PS2 Loader](#open-ps2-loader-opl) or [NHDDL](#neutrino-and-nhddl) to launch specific PS2 games from the exFAT partition.
+[OSDMenu MBR](#osdmenu-mbr) resides in the `__mbr` partition and launches apps, and directs [Open PS2 Loader](#open-ps2-loader-opl) or [NHDDL](#nhddl) to launch specific PS2 games from the exFAT partition.
 
 **Warning: Manually creating new APA partitions on your PS2 drive and exceeding the allocated space for APA will corrupt the drive.**
 
@@ -933,6 +996,7 @@ You must also download the [External HDD Drivers](https://israpps.github.io/Free
 If you encounter problems running the **PSBBN Definitive Project** on your PC:
 1. Make sure you are running the latest version of your operating system and that it is fully updated
 2. Use a recommended OS. The **PSBBN Definitive Project** has been fully tested on:
+- Debian
 - Linux Mint
 - Raspberry Pi OS
 - Windows 10 Home Edition
@@ -966,23 +1030,22 @@ If your console boots to the regular OSD or freezes, it means that your drive ha
 
 ## Problems Launching Games
 
-If OPL freezes at startup, delete any existing OPL configuration files from your PS2 Memory Cards or connected USB devices.  
-To display the games list in OPL, make sure a regular PS2 Memory Card is inserted into your console (if you are using either the MemCard Pro 2 or SD2PSX, remove it), launch OPL and adjust the following settings:
+If OPL freezes at startup, delete any existing OPL configuration files from your PS2 Memory Cards or connected USB devices.
+
+To display the games list in OPL, adjust the following settings:
 1. Settings > HDD (APA) Start Mode: Off
 2. Settings > BDM Start Mode: Auto
 3. Settings > BDM Devices > HDD (GPT/MBR): On
 4. Settings > Save Changes
 
-These settings will be saved to your PS2 Memory Card. You can keep this card in Slot 2 and use your MemCard Pro 2 or SD2PSX in Slot 1.
-
-If games do not appear in the games list in [NHDDL](#neutrino-and-nhddl) or [OPL](#open-ps2-loader-opl) (after modifying the OPL settings as described above), or fail to launch from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#HOSDMenu), try the following:
+If games do not appear in the games list in [NHDDL](#nhddl) or [OPL](#open-ps2-loader-opl) (after modifying the OPL settings as described above), or fail to launch from the [PSBBN Game Collection](#game-collection) and [HOSDMenu](#HOSDMenu), try the following:
 
 1. If you have a [mod chip](#known-issues), disable it
 2. Remove all PS2 Memory Cards from your console
 3. Check that the connectors on the console and network/HDD adapter are clean and free of dust/debris
 4. Ensure the network/HDD adapter and drive are securely connected to the console
 5. If using a SATA mod, make sure it has been installed correctly
-6. Re-run the [Game Installer](#install-games-and-apps) and select the alternative game launcher ([OPL](#open-ps2-loader-opl)/[Neutrino](#neutrino-and-nhddl))
+6. Re-run the [Game Installer](#install-games-and-apps) and select the alternative game launcher ([OPL](#open-ps2-loader-opl)/[NHDDL](#nhddl))
 7. Connect the PS2 HDD/SSD directly to your PC using an internal SATA connection or use a different USB adapter, then reinstall [PSBBN](#install-psbbn-and-hosdmenu) or [HOSDMenu](#install-hosdmenu-only)
 8. Try using a different HDD/SSD and then reinstall [PSBBN](#install-psbbn-and-hosdmenu) or [HOSDMenu](#install-hosdmenu-only)
 9. Try using a different IDE converter/SATA mod on your console
@@ -1002,7 +1065,6 @@ If games do not appear in the games list in [NHDDL](#neutrino-and-nhddl) or [OPL
 - exFAT partition cannot exceed 2 TB. When using a drive larger, remaining space beyond that will be unusable.
 - **wLaunchELF** and other native PS2 apps cannot create APA partitions on the PS2 drive. New partitions should only be created using the version of **PFS Shell** included with this project.
 - APA partitions must not be created beyond the space allocated for APA during PSBBN/HOSDMenu installation. Doing so will overwrite data on the exFAT partition.
-- OPL cannot read settings saved on the exFAT partition of the internal drive. Settings should be saved to a PS2 memory card. For details see the **[troubleshooting](#problems-launching-games)** section for details.
 
 # Legacy versions of the PSBBN Definitive English Patch
 <details>
@@ -1161,6 +1223,7 @@ Disable DNAS Authentication:
 - [Neutrino](https://github.com/rickgaiser/neutrino) by [Rick Gaiser](https://github.com/rickgaiser)
 - [NHDDL](https://github.com/pcm720/nhddl) by [pcm720](https://github.com/pcm720)
 - [POPStarter](https://www.psx-place.com/resources/popstarter.683/) by [KrHACKen](https://www.psx-place.com/members/krhacken.98/)
+- [HugoPocked POPStarter fixes](https://www.psx-place.com/threads/hugopocked-fixes-for-popstarter.39750/) by [HugoPocked](https://ko-fi.com/hugopocked)
 - [wLaunchELF_ISR](https://israpps.github.io/projects/wlaunchelf-isr) by [Matías Israelson (israpps)](https://github.com/israpps)
 - PS2 cover art from the [OPL Manager Art DB backups](https://oplmanager.com/site/index.php?backups)
 - App icons from [OPL B-APPS Cover Pack](https://www.psx-place.com/resources/opl-b-apps-cover-pack.1440/) and [OPL Discs & Boxes Pack](https://www.psx-place.com/resources/opl-discs-boxes-pack.1439/) courtesy of [Berion](https://www.psx-place.com/resources/authors/berion.1431/)

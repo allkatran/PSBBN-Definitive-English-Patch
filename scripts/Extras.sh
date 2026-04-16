@@ -758,6 +758,9 @@ option_one() {
     # Remove any existing boot_circle lines
     sed -i '/^boot_circle/d' "$TMP_FILE" 2>> "${LOG_FILE}"
 
+    # Ensure the file ends with a newline
+[   -n "$(tail -c1 "$TMP_FILE" | tr -d '\n')" ] && echo >> "$TMP_FILE"
+
     # Append new PSBBN boot entries
     {
         echo 'boot_circle = $PSBBN'
@@ -1306,6 +1309,9 @@ EOF
             return 1; 
         }
     else
+        # Ensure the file ends with a newline
+        [ -n "$(tail -c1 "$OSDMBR_CNF" | tr -d '\n')" ] && echo >> "$OSDMBR_CNF"
+
         echo "osd_screentype = $SCREEN_SIZE" >> "${OSDMBR_CNF}" || {
             error_msg "[X] Error: Failed to add osd_screentype in OSDMBR.CNF."; 
             return 1; 

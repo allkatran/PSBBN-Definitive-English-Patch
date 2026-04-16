@@ -897,41 +897,31 @@ if [ "$PSBBN_UPDATE" != "no" ] || [ "$MODE" != "update" ]; then
     fi
     echo "======================================= PSBBN Definitive Patch v$LATEST_VERSION ========================================"
     if [ "$LATEST_VERSION" = "4.2.0" ]; then
-        echo
-        echo "          New to Version 4.2.0"
-        echo "          - The Game Channel has been renamed to the Internet Channel, reflecting its online focus."
-        echo "          - New online channels added! BANDAI CHANNEL, So-Net, and BIGLOBE."
-        echo "          - Download new game trailer in higher quality, with thumbnails."
-        echo "          - French language support is now available for PSBBN."
+        cat << "EOF"
+
+        New to Version 4.2.0
+        - The Game Channel has been renamed to the Internet Channel, reflecting its online focus
+        - New online channels added! BANDAI CHANNEL, So-Net, and BIGLOBE
+        - Download new game trailer in higher quality, with thumbnails
+        - French language support is now available for PSBBN
+
+        Game Installer Update
+        - OPL, NHDDL, and Neutrino updated to the latest versions
+        - The selected game launcher (OPL or NHDDL) is assigned to the SQUARE startup button
+        - VMCs can be created for PS2 games, with support for VMC groups
+        - An OPL configuration file is created on your drive; BDM HDD, apps, and artwork are enabled
+        - Games in ZSO format have “Compatibility Mode 1” automatically enabled in OPL
+        - Multiple games with the same Title ID can now be installed, allowing support for mods
+        - PS1 games feature a new PSN-style border in the PSBBN Game Collection
+        - Automatic installation of HugoPocked POPStarter fixes for improved PS1 compatibility
+
+        Full release notes on GitHub: https://github.com/CosmicScale/PSBBN-Definitive-Project
+
+        Watch the latest update video: https://youtu.be/oRm3QIwdf1o
+
+==============================================================================================================
+EOF
     fi
-    if [ "$LATEST_VERSION" = "4.2.0" ] || [ "$LATEST_VERSION" = "4.1.0" ]; then
-        echo
-        echo "          New to Version 4.1.0"
-        echo "          Multilingual Support:"
-        echo "          - The PSBBN Definitive Project now supports English, Japanese, German, Italian, "
-        echo "            Portuguese (Brazil), and Spanish."
-        echo "          - Select your preferred language during PSBBN and HOSDMenu installation."
-        echo "          - The language can also be changed later from the Optional Extras menu."
-        echo "          - When the language is set to Japanese, Japan-region games will appear in the"
-        echo "            PSBBN Game Collection and HOSDMenu's Browser using their original Japanese titles."
-        echo "          - When the language is set to Japanese, the original Japanese online game channels"
-        echo "            can be accessed from the PSBBN Game Channel."
-        echo
-        echo "          New Features:"
-        echo "          - OSDMenu MBR and HOSDMenu have been updated to version 1.2.0."
-        echo "          - Selecting \"Install Games and Apps\" from the main menu will install the all-new"
-        echo "            OSDMenu Configurator."
-        echo "          - The options \"Install Movies\" and \"Install Photos\" are now available in the"
-        echo "            Install Media menu."
-        echo "          - You can now change screen settings and clear the art & icon cache in the"
-        echo "            Optional Extras menu."
-        echo
-        echo "          Full release notes on GitHub: https://github.com/CosmicScale/PSBBN-Definitive-Project"  
-        echo
-        echo "          Watch the latest video covering this update: https://youtu.be/_jKzzsClgOY"
-    fi
-    echo
-    echo "=============================================================================================================="
     echo
     read -n 1 -s -r -p "                                    Press any key to return to continue..." </dev/tty
     echo

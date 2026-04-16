@@ -27,7 +27,9 @@ import os.path
 import math
 import re
 import lz4.block
+import unicodedata
 from struct import unpack
+from collections import defaultdict
 
 done = "Error: No games found."
 total = 0
@@ -149,6 +151,45 @@ def extract_game_id_from_disc(fin, sector_reader):
                     return line.split("\\")[-1].split(";")[0].upper()
     return None
 
+def clean_name_from_filename(name, game_id):
+    base_name = os.path.splitext(name)[0]
+
+    if base_name.upper().startswith(game_id):
+        stripped = base_name[len(game_id):].lstrip('_. ')
+        return stripped if stripped else base_name
+    else:
+        return base_name
+
+def make_partition_label(game_id, title, suffix):
+    # Format game id correctly for partition name
+    title_id = re.sub(r'_(...)\.', r'-\1', game_id)
+    title_id = title_id.replace('.', '')
+
+    # Replace special superscripts first
+    title = title.replace('²', '2').replace('³', '3')
+
+    # Transliterate to ASCII
+    title_ascii = unicodedata.normalize('NFKD', title).encode('ascii', 'ignore').decode()
+
+    # Uppercase
+    title_ascii = title_ascii.upper()
+
+    # Replace non A-Z0-9 with underscores
+    sanitized = re.sub(r'[^A-Z0-9]', '_', title_ascii)
+
+    # Clean up underscores
+    sanitized = re.sub(r'^_+', '', sanitized)      # leading
+    sanitized = re.sub(r'_+$', '', sanitized)      # trailing
+    sanitized = re.sub(r'_+', '_', sanitized)      # multiple → single
+
+    # Build label
+    partition_label = f"PP.{title_id}.{suffix}.{sanitized}"
+
+    # Cut to 32 chars and remove trailing underscore
+    partition_label = partition_label[:32].rstrip('_')
+
+    return partition_label
+
 # Function to process game files in the given folder
 def process_files(folder, extensions):
     global total, count, done
@@ -163,6 +204,8 @@ def process_files(folder, extensions):
 
     # Prepare a list to hold all game list entries
     game_list_entries = []
+    game_id_counts = defaultdict(int)
+    temp_entries = []
 
     for image in os.listdir(game_path + folder):
         if image.startswith('.'):
@@ -170,26 +213,26 @@ def process_files(folder, extensions):
         if not any(image.lower().endswith(ext) for ext in extensions):
             continue  # skip files that are not in the extension list
         print('Processing', image)
-        string = ""
-        original_image = image
+        game_id = ""
+        game_image = image
 
         file_path = os.path.join(game_path + folder, image)
 
         # Extract Game ID from filename if it meets the condition
         file_name_without_ext = os.path.splitext(image)[0]
         if len(file_name_without_ext) >= 11 and file_name_without_ext[4] == '_' and file_name_without_ext[8] == '.':
-            string = file_name_without_ext[:11].upper()
-            print(f"Filename meets condition. Game ID set directly from filename: {string}")
+            game_id = file_name_without_ext[:11].upper()
+            print(f"Filename meets condition. Game ID set directly from filename: {game_id}")
 
         # ISO
-        if image.lower().endswith('.iso') and not string:
+        if image.lower().endswith('.iso') and not game_id:
             with open(file_path, "rb") as fin:
                 def iso_reader(sector, num_sectors=1):
                     return read_iso_sector(fin, sector, num_sectors)
-                string = extract_game_id_from_disc(fin, iso_reader) or ""
+                game_id = extract_game_id_from_disc(fin, iso_reader) or ""
 
         # ZSO
-        if image.lower().endswith('.zso') and not string:
+        if image.lower().endswith('.zso') and not game_id:
             with open(file_path, "rb") as fin:
                 magic, header_size, total_bytes, block_size, ver, align = read_zso_header(fin)
                 if magic != ZISO_MAGIC:
@@ -201,10 +244,10 @@ def process_files(folder, extensions):
                     def zso_reader(sector, num_sectors=1):
                         return decompress_zso_sector(fin, index_buf, block_size, align, sector, num_sectors)
 
-                    string = extract_game_id_from_disc(fin, zso_reader) or ""
+                    game_id = extract_game_id_from_disc(fin, zso_reader) or ""
 
         # VCD
-        if image.lower().endswith('.vcd') and not string:
+        if image.lower().endswith('.vcd') and not game_id:
             with open(game_path + folder + "/" + image, "rb") as file:
                 for raw_line in file:
                     line = raw_line.strip()
@@ -215,90 +258,90 @@ def process_files(folder, extensions):
                         segment = line[idx:].split(b';', 1)[0]
 
                         raw_bytes = segment.split(b'\\')[-1]
-                        string = raw_bytes.decode('utf-8', errors='ignore').upper()
+                        game_id = raw_bytes.decode('utf-8', errors='ignore').upper()
 
-                        if len(string) == 11:
+                        if len(game_id) == 11:
                             # If it starts with SLUSP, remove the trailing 'P'
-                            if string.startswith("SLUSP"):
-                                string = "SLUS" + string[5:]
+                            if game_id.startswith("SLUSP"):
+                                game_id = "SLUS" + game_id[5:]
                                 
                             # Only fix if underscore or dot are in the wrong positions
-                            if string[4] != '_' or string[8] != '.':
+                            if game_id[4] != '_' or game_id[8] != '.':
                                 # Remove any existing underscore or dot
-                                cleaned = string.replace('_', '').replace('.', '').replace('-', '')
+                                cleaned = game_id.replace('_', '').replace('.', '').replace('-', '')
                                 # Rebuild with underscore at index 4 and dot at index 8
-                                string = cleaned[:4] + '_' + cleaned[4:7] + '.' + cleaned[7:]
+                                game_id = cleaned[:4] + '_' + cleaned[4:7] + '.' + cleaned[7:]
                         break
         
         # Fallback for ISO and VCD
-        if (len(string) < 11 or len(string) > 12) and (image.lower().endswith('.iso') or image.lower().endswith('.vcd')):
+        if (len(game_id) < 11 or len(game_id) > 12) and (image.lower().endswith('.iso') or image.lower().endswith('.vcd')):
             with open(file_path, "rb") as f:
                 data_to_scan = f.read()  # Scan the entire file
 
             index = 0
-            string = ""
+            game_id = ""
             for byte in data_to_scan:
-                if len(string) < 4:
+                if len(game_id) < 4:
                     if index == 2:
-                        string += chr(byte)
+                        game_id += chr(byte)
                     elif byte == pattern_1[index][0]:
                         index += 1
                     else:
-                        string = ""
+                        game_id = ""
                         index = 0
-                elif len(string) == 4:
+                elif len(game_id) == 4:
                     index = 0
                     if byte in (0x5F, 0x2D):
-                        string += '_'
+                        game_id += '_'
                     else:
-                        string = ""
-                elif len(string) < 8:
-                    string += chr(byte)
-                elif len(string) == 8:
+                        game_id = ""
+                elif len(game_id) < 8:
+                    game_id += chr(byte)
+                elif len(game_id) == 8:
                     if byte == 0x2E:
-                        string += '.'
+                        game_id += '.'
                     else:
-                        string = ""
-                elif len(string) < 11:
-                    string += chr(byte)
-                elif len(string) == 11:
+                        game_id = ""
+                elif len(game_id) < 11:
+                    game_id += chr(byte)
+                elif len(game_id) == 11:
                     if byte == pattern_2[index][0]:
                         index += 1
                         if index == 2:
                             # Check for "CDDA_END.DA"
-                            if string == "CDDA_END.DA":
+                            if game_id == "CDDA_END.DA":
                                 # Reset and continue scanning
-                                string = ""
+                                game_id = ""
                                 index = 0
                                 continue
                             else:
                                 # If not CDDA_END.DA, handle normally (e.g., match found)
                                 break
                     else:
-                        string = ""
+                        game_id = ""
                         index = 0
 
         # If no Game ID is found, generate one from filename
-        if not string:
+        if not game_id:
             # Remove spaces from filename and convert to uppercase
             base_name = os.path.splitext(image)[0]  # Strip the file extension
-            string = re.sub(r'[^A-Z0-9]', '', base_name.upper())  # Keep only A-Z and 0-9
+            game_id = re.sub(r'[^A-Z0-9]', '', base_name.upper())  # Keep only A-Z and 0-9
 
-            # Trim the string to 9 characters or pad with zeros
-            string = string[:9].ljust(9, '0')
+            # Trim the game_id to 9 characters or pad with zeros
+            game_id = game_id[:9].ljust(9, '0')
 
             # Insert the underscore at position 5 and the full stop at position 9
-            string = string[:4] + '_' + string[4:7] + '.' + string[7:]
+            game_id = game_id[:4] + '_' + game_id[4:7] + '.' + game_id[7:]
 
-            # Ensure the string is exactly 11 characters long
-            string = string[:11]
+            # Ensure the game_id is exactly 11 characters long
+            game_id = game_id[:11]
 
-            print(f'No Game ID found. Generating Game ID based on filename: {string}')
+            print(f'No Game ID found. Generating Game ID based on filename: {game_id}')
 
-        string = string.upper()
+        game_id = game_id.upper()
 
         # Determine game name and publisher
-        entry = game_names.get(string)
+        entry = game_names.get(game_id)
         if entry:
             game_name, publisher, jpn_title = entry
             if not game_name:
@@ -306,24 +349,53 @@ def process_files(folder, extensions):
                 publisher = ""
                 jpn_title = ""
         else:
-            base_name = os.path.splitext(image)[0]
-            # If filename begins with the Game ID, strip it off
-            if base_name.upper().startswith(string):
-                stripped = base_name[len(string):].lstrip('_. ')
-                game_name = stripped if stripped else base_name
-            else:
-                game_name = base_name
+            game_name = clean_name_from_filename(image, game_id)
             publisher = ""
             jpn_title = ""
             
-        print(f"Game ID '{string}' -> Game='{game_name}', Publisher='{publisher}'")
+        print(f"Game ID '{game_id}' -> Game='{game_name}', Publisher='{publisher}'")
 
-        # Add to game list entries
-        folder_image = re.sub(r'^/(?:__\.)?', '', folder)
-        game_list_entries.append(f"{game_name}|{string}|{publisher}|{folder_image}|{original_image}|{jpn_title}")
+        # 1st pass (store + count only)
+        game_type = re.sub(r'^/(?:__\.)?', '', folder)
+
+        game_id_counts[game_id] += 1
+
+        temp_entries.append({
+            "game_id": game_id,
+            "game_name": game_name,
+            "publisher": publisher,
+            "game_type": game_type,
+            "game_image": game_image,
+            "jpn_title": jpn_title
+        })
 
         count += 1
         print(math.floor((count * 100) / total), '% complete')
+
+    # 2nd pass (build final entries)
+    game_id_index = defaultdict(int)
+
+    for entry in temp_entries:
+        game_id = entry["game_id"]
+
+        game_id_index[game_id] += 1
+        suffix = f"{game_id_index[game_id]:02d}"
+
+        # Apply duplicate rule
+        if game_id_counts[game_id] > 1:
+            display_name = clean_name_from_filename(entry["game_image"], game_id)
+        else:
+            display_name = entry["game_name"]
+
+        partition_label = make_partition_label(
+            game_id,
+            entry["game_name"],
+            suffix
+        )
+
+        game_list_entries.append(
+            f"{display_name}|{game_id}|{entry['publisher']}|{entry['game_type']}|{entry['game_image']}|{entry['jpn_title']}|{partition_label}"
+        )
 
     if game_list_entries:
         with open(games_list_path, "a") as output:

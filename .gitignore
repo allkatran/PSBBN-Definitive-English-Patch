@@ -16,6 +16,7 @@ scripts/assets/HDD-OSD/
 games/APPS/*.elf
 games/APPS/*.ELF
 scripts/tmp
+scripts/assets/Hugopocked POPStarter Fixes (2023-08-11)/
 logs/
 *.log
 *.gz
@@ -60,6 +61,7 @@ logs/
 *.webp
 *.heic
 *.heif
+*.rar
 IOPRP252.IMG
 POPS.ELF
 gamepath.cfg
