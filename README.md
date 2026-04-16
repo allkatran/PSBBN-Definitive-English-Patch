@@ -85,8 +85,8 @@ This project uses [webhook.site](https://webhook.site/) to automatically contrib
 - Added table for [POPStarter hotkeys](#popstarter)
 - Added Debian to the list of [recommended operating systems](#installing-on-linux)
 - Added new features to [Install Games and Apps](#install-games-and-apps) section
-- Changed references from Neutrino to [NHDDL](#nhddl), reflecing how games now launch
-- General improvments
+- Changed references from Neutrino to [NHDDL](#nhddl), refletcing how games now launch
+- General improvements
 
 **March 27, 2026 - Virtual Memory Cards (VMCs) for PS2 games**
 - The **[Game Installer](#game-and-app-installer)** now offers the option to enable **[VMCs](#virtual-memory-cards)** for PS2 games. No additional setup is necessary
