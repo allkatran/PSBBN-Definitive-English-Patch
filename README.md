@@ -57,6 +57,10 @@ This project uses [webhook.site](https://webhook.site/) to automatically contrib
 # Changelog
 
 **April 16, 2026 - Improved PS1 Compatibility, PS2 VMCs, OPL Update & More!**
+<p></p>
+
+[![Improved PS1 Compatibility, PS2 VMCs, OPL Update & More!](https://github.com/user-attachments/assets/1dc75789-bbd4-45df-9615-7e9bd8bd3ac5)](https://youtu.be/oRm3QIwdf1o)  
+
 - **[OPL](#open-ps2-loader-opl)** updated to **v1.2.0 Beta-2241-39afed2** - fixes configuration read issues on the internal drive’s exFAT partition
 - **[NHDDL](#nhddl)** updated to **[v1.2.2](https://github.com/pcm720/nhddl/releases/tag/v1.2.2)** 
 - **[Neutrino](#nhddl)** updated to **[v1.8.0](https://github.com/rickgaiser/neutrino/releases/tag/v1.8.0)** - reduces game launch time by around 4 seconds
