@@ -498,7 +498,7 @@ CREATE_VMC() {
                     patch_path="$POP_FIXES/$patch_folder"
                 elif [[ "$line" == "$game_id" ]]; then
                     echo "Applying patches for $game_id from $patch_folder" | tee -a "${LOG_FILE}"
-                    cp "$patch_path"/*.BIN . >> "${LOG_FILE}" 2>&1
+                    cp -nv "$patch_path"/*.BIN . >> "${LOG_FILE}" 2>&1
                     break
                 fi
             done < $HELPER_DIR/POP-game-fixes.list
