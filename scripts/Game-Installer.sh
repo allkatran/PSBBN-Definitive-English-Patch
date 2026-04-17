@@ -1434,7 +1434,7 @@ for row in rows:
 
 # Write back non-JPN rows to GAME_LIST
 with open("${GAME_LIST}", "w", encoding="utf-8", newline='') as f:
-    csv.writer(f, delimiter='|').writerows(non_jpn_rows)
+    csv.writer(f, delimiter='|', lineterminator='\n').writerows(non_jpn_rows)
 
 # Sort JPN rows if not empty
 if jpn_rows:
@@ -1450,7 +1450,7 @@ if jpn_rows:
 
     # Write sorted JPN_LIST
     with open("${JPN_LIST}", "w", encoding="utf-8", newline='') as f:
-        csv.writer(f, delimiter='|').writerows(jpn_rows)
+        csv.writer(f, delimiter='|', lineterminator='\n').writerows(jpn_rows)
 EOF
 }
 
