@@ -1245,8 +1245,9 @@ EOF
                 ;;
             2)
                 SCREEN_SIZE="full"
+                SIZE_NAME="Full"
                 case "$LANG" in
-                    eng) SIZE_NAME="Full" ;;
+                    jpn) SIZE_NAME="フル" ;;
                     fre) SIZE_NAME="Plein écran" ;;
                     spa) SIZE_NAME="Pantalla Completa" ;;
                     ger) SIZE_NAME="Ganzer Bildschirm" ;;
