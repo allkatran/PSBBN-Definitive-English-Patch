@@ -1056,6 +1056,9 @@ EOF
             CHANNELS="${ASSETS_DIR}/${LATEST_FILE}"
         fi
 
+        echo
+        echo -n "Installing language pack..."
+
         sed -i "s/^LANG =.*/LANG = $LANG/" "$OPL/version.txt" || { error_msg "[X] Error: Failed to update language in version.txt."; return 1; }
         sed -i "s|^LANG_VER =.*|LANG_VER = $LATEST_LANG|" "${OPL}/version.txt" || { error_msg "[X] Error: Failed to update language in version.txt."; return 1; }
         sed -i "s|^CHAN_VER =.*|CHAN_VER = $LATEST_CHAN|" "${OPL}/version.txt" || { error_msg "[X] Error: Failed to update language in version.txt."; return 1; }
@@ -1071,8 +1074,6 @@ EOF
         ls -l /dev/mapper >> "${LOG_FILE}"
         df >> "${LOG_FILE}"
 
-        echo
-        echo -n "Installing language pack..."
         sudo tar zxpf "$LANG_PACK" -C "${STORAGE_DIR}/" >> "${LOG_FILE}" 2>&1 || { error_msg "[X] Error: Failed to install $LANG_DISPLAY language pack." "See ${LOG_FILE} for details."; return 1; }
 
         if [[ "$LANG" == "jpn" ]]; then
@@ -1107,8 +1108,9 @@ EOF
         fi
 
         if [[ "$SCREEN" == "full" ]]; then
+            SIZE_NAME="Full"
             case "$LANG" in
-                eng) SIZE_NAME="Full" ;;
+                jpn) SIZE_NAME="フル" ;;
                 fre) SIZE_NAME="Plein écran" ;;
                 spa) SIZE_NAME="Pantalla Completa" ;;
                 ger) SIZE_NAME="Ganzer Bildschirm" ;;
@@ -1118,24 +1120,24 @@ EOF
             esac
         elif [[ "$SCREEN" == "16:9" ]]; then
             SIZE_NAME="16:9"
-        else
-            SIZE_NAME="4:3"
         fi
 
-        mkdir -p "${SCRIPTS_DIR}/tmp"
-        sudo cp "${STORAGE_DIR}/__linux.4/bn/script/utility/sysconf.xml" "${SYSCONF_XML}" || error_msg "Failed to copy sysconf.xml"
+        if [[ "$SCREEN" == "full" || "$SCREEN" == "16:9" ]]; then
+            mkdir -p "${SCRIPTS_DIR}/tmp"
+            sudo cp "${STORAGE_DIR}/__linux.4/bn/script/utility/sysconf.xml" "${SYSCONF_XML}" || error_msg "Failed to copy sysconf.xml"
 
-        sed -i "/<menu id=\"sysconf_value_2_0\">/,/<\/menu>/ {
-            /<item value=/ {
-                s|<item value=.*|<item value=\"$SIZE_NAME\"/>|
-                :done
-                n
-                b done
-            }
-        }" "$SYSCONF_XML" ||
-        error_msg "Failed to update $SYSCONF_XML";
+            sed -i "/<menu id=\"sysconf_value_2_0\">/,/<\/menu>/ {
+                /<item value=/ {
+                    s|<item value=.*|<item value=\"$SIZE_NAME\"/>|
+                    :done
+                    n
+                    b done
+                }
+            }" "$SYSCONF_XML" ||
+            error_msg "Failed to update $SYSCONF_XML";
 
-        sudo cp -f "${SYSCONF_XML}" "${STORAGE_DIR}/__linux.4/bn/script/utility/sysconf.xml" || error_msg "Failed to replace sysconf.xml."
+            sudo cp -f "${SYSCONF_XML}" "${STORAGE_DIR}/__linux.4/bn/script/utility/sysconf.xml" || error_msg "Failed to replace sysconf.xml."
+        fi
     else
         sed -i "s/^LANG =.*/LANG = $LANG/" "$OPL/version.txt" || { error_msg "[X] Error: Failed to update language in version.txt."; return 1; }
         APA_PARTITIONS=("__common")
