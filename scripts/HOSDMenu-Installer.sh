@@ -408,17 +408,30 @@ else
 
     echo
     echo "Selected drive: $drive_model" | tee -a "${LOG_FILE}"
-    echo
-    echo "Are you sure you want to install to the selected drive?" | tee -a "${LOG_FILE}"
-    echo
-    read -p "This will erase all data on the drive. (yes/no): " CONFIRM
-        if [[ $CONFIRM != "yes" ]]; then
-            echo "Aborted." | tee -a "${LOG_FILE}"
-            echo
-            read -n 1 -s -r -p "Press any key to return to the menu..." </dev/tty
-            echo
-            exit 1
-        fi
+
+    while true; do
+        echo
+        echo "Are you sure you want to install to the selected drive?" | tee -a "${LOG_FILE}"
+        echo
+        read -p "This will erase all data on the drive. (yes/no): " CONFIRM
+
+        case "$CONFIRM" in
+            yes)
+                # Valid confirmation → break out of loop and continue
+                break
+                ;;
+            no)
+                echo
+                read -n 1 -s -r -p "Aborted. Press any key to return to the menu..." </dev/tty
+                echo
+                exit 1
+                ;;
+            *)
+                echo
+                echo "Please enter 'yes' or 'no'."
+                ;;
+        esac
+    done
 fi
 
 UNMOUNT_ALL
