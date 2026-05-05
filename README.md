@@ -898,7 +898,7 @@ The **Retro GEM** is a digital to digital HDMI output upgrade for multiple conso
 ## Exiting Games
 - To quit PS1 games, press `L1 + SELECT + START`
 - If you selected [OPL](#open-ps2-loader-opl) as your game launcher, to quit PS2 games, press `L1 + L2 + R1 + R2 + SELECT + START` and to power off the console press `L1 + L2 + L3 + R1 + R2 + R3`
-- If you selected [NHDDL](#nhddl) as your game laucmher, you will not be able to use the in-game reset as Neutrino does not support this function
+- If you selected [NHDDL](#nhddl) as your game launcher, you will not be able to use the in-game reset as Neutrino does not support this function
 
 ## Launching PS1 and PS2 Game Discs
 When running PSBBN or [HOSDMenu](#hosdmenu), simply insert a game disc into the DVD drive. The game will boot and set the [Game ID](#game-id) on both the **Retro GEM** and **MemCard Pro/SD2PSX** accordingly.
